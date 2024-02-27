@@ -55,7 +55,9 @@ nav .nav-links a{
 }
 
 nav .nav-links a:hover,
-nav .nav-links a.selected{
+nav .nav-links a.selected,
+.featured .item .details a:hover,
+.content .item .details a:hover{
     color: #303f9f;
 }
 
