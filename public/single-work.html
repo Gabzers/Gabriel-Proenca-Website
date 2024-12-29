@@ -23,30 +23,12 @@
         </div>
     </nav>
 
-    <h1 class="page-title">Designing Dashboards with usability in mind</h1>
+    <h1 class="page-title" id="repoName">Loading...</h1>
 
     <div class="content">
-        <div class="work-info">
-            <div class="year-badge">2024</div>
-            <div class="category">
-                <p>Dashboard, User Experience Design</p>
-            </div>
+        <div class="readme-content" id="readmeContent">
+            <!-- README content will be dynamically inserted here -->
         </div>
-
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ab cumque magnam, perspiciatis repellendus laudantium possimus soluta delectus dicta tenetur illo.</p>
-
-        <img src="assets/single-post-1.png">
-
-        <h1>Heading 1</h1>
-        <h2>Heading 2</h2>
-        <h3>Heading 3</h3>
-
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus rem minus quod, nobis voluptatum, vitae consequatur est laudantium quidem in quae! Iusto quod ipsam incidunt voluptatibus necessitatibus culpa, perspiciatis commodi.
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repellendus praesentium tempore ipsa velit commodi et, tenetur eveniet iure omnis, delectus ab, corporis suscipit. Dolore unde deserunt asperiores quam, iure distinctio?
-        </p>
-
-        <img src="assets/single-post-2.png">
-
     </div>
 
     <footer>
@@ -59,6 +41,15 @@
     <script src="js/script.js"></script>
     <script>
         document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const repoName = urlParams.get('repoName');
+            const readmeContent = decodeURIComponent(urlParams.get('readmeContent'));
+
+            document.getElementById('repoName').textContent = repoName;
+            document.getElementById('readmeContent').innerHTML = `<pre>${readmeContent}</pre>`;
+        });
     </script>
 </body>
 </html>
