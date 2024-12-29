@@ -66,13 +66,13 @@ async function fetchGitHubRepos(token) {
                     item.classList.add('item');
                     item.innerHTML = `
                         <div class="details">
-                            <a href="${repo.html_url}" target="_blank"><h3>${repo.name}</h3></a>
+                            <a href="single-work.html?repoName=${encodeURIComponent(repo.name)}"><h3>${repo.name}</h3></a>
                             <div class="item-info">
                                 <div class="year-badge">${new Date(repo.created_at).getFullYear()}</div>
                                 <h4>${repo.language || 'N/A'}</h4>
                             </div>
                             <p>${repo.description || 'No description available.'}</p>
-                            <button class="how-it-works-btn" onclick="openReadmePage('${repo.name}', '${token}')">How it works</button>
+                            <button class="how-it-works-btn" onclick="window.open('${repo.html_url}', '_blank')">GitHub Repository</button>
                         </div>
                     `;
                     worksList.appendChild(item);
@@ -134,13 +134,13 @@ document.addEventListener("DOMContentLoaded", async function() {
                     item.classList.add('item');
                     item.innerHTML = `
                         <div class="details">
-                            <a href="${repo.html_url}" target="_blank"><h3>${repo.name}</h3></a>
+                            <a href="single-work.html?repoName=${encodeURIComponent(repo.name)}"><h3>${repo.name}</h3></a>
                             <div class="item-info">
                                 <div class="year-badge">${new Date(repo.created_at).getFullYear()}</div>
                                 <h4>${repo.language || 'N/A'}</h4>
                             </div>
                             <p>${repo.description || 'No description available.'}</p>
-                            <button class="how-it-works-btn" onclick="openReadmePage('${repo.name}', '${token}')">How it works</button>
+                            <button class="how-it-works-btn" onclick="window.open('${repo.html_url}', '_blank')">GitHub Repository</button>
                         </div>
                     `;
                     worksList.appendChild(item);

@@ -29,6 +29,7 @@
         <div class="readme-content" id="readmeContent">
             <!-- README content will be dynamically inserted here -->
         </div>
+        <button class="how-it-works-btn" id="githubRepoButton">GitHub Repository</button>
     </div>
 
     <footer>
@@ -42,13 +43,31 @@
     <script>
         document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const repoName = urlParams.get('repoName');
-            const readmeContent = decodeURIComponent(urlParams.get('readmeContent'));
 
             document.getElementById('repoName').textContent = repoName;
-            document.getElementById('readmeContent').innerHTML = `<pre>${readmeContent}</pre>`;
+            document.getElementById('githubRepoButton').onclick = function() {
+                window.open(`https://github.com/Gabzers/${repoName}`, '_blank');
+            };
+
+            const token = await fetchGitHubToken();
+            if (token) {
+                const readmeResponse = await fetch(`https://api.github.com/repos/Gabzers/${repoName}/readme`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3.raw'
+                    }
+                });
+
+                if (readmeResponse.ok) {
+                    const readmeContent = await readmeResponse.text();
+                    document.getElementById('readmeContent').innerHTML = `<pre>${readmeContent}</pre>`;
+                } else {
+                    document.getElementById('readmeContent').innerHTML = '<p>Unable to load README.md</p>';
+                }
+            }
         });
     </script>
 </body>

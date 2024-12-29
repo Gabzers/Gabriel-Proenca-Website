@@ -72,7 +72,7 @@
         <div class="item">
             <img src="assets/item-3.jpg">
             <div class="details">
-                <a href="single-work-work1.html"><h3>Personal Website</h3></a>
+                <a href="single-work.html?repoName=Personal%20Website"><h3>Personal Website</h3></a>
                 <div class="item-info">
                     <div class="year-badge">2024</div>
                     <h4>HTML / CSS / JS</h4>
@@ -117,7 +117,7 @@
                             item.classList.add('item');
                             item.innerHTML = `
                                 <div class="details">
-                                    <a href="${repo.html_url}" target="_blank"><h3>${repo.name}</h3></a>
+                                    <a href="single-work.html?repoName=${encodeURIComponent(repo.name)}"><h3>${repo.name}</h3></a>
                                     <div class="item-info">
                                         <div class="year-badge">${new Date(repo.created_at).getFullYear()}</div>
                                         <h4>${repo.language || 'N/A'}</h4>
