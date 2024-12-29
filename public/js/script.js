@@ -57,7 +57,7 @@ async function fetchGitHubRepos(token) {
         const repoNames = new Set(); // Track repo names to avoid duplicates
 
         repos.forEach(repo => {
-            if (!repoNames.has(repo.name)) {
+            if (repo.name !== 'Gabriel-Proenca-Website' && !repoNames.has(repo.name)) { // Exclude "Gabriel-Proenca-Website"
                 repoNames.add(repo.name);
                 const item = document.createElement('div');
                 item.classList.add('item');
