@@ -74,9 +74,12 @@
             <a href="https://www.linkedin.com/in/gabriel-proen%C3%A7a/" target="_blank"><i class='bx bxl-linkedin-square'></i></a>
             <a href="https://github.com/Gabzers" target="_blank"><i class='bx bxl-github'></i></a>
         </div>
-        <p>Copyright @2024, All rights reserved.</p>
+        <p>Copyright @<span id="currentYear"></span>, All rights reserved.</p>
     </footer>
 
     <script src="js/script.js"></script>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
