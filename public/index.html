@@ -66,6 +66,9 @@
     </div>
 
     <div class="featured">
+        <div class="github-featured" id="github-featured">
+            <!-- GitHub featured projects will be dynamically inserted here -->
+        </div>
         <div class="item">
             <img src="assets/item-3.jpg">
             <div class="details">
@@ -94,6 +97,38 @@
             const token = await fetchGitHubToken();
             if (token) {
                 await fetchGitHubRepos(token);
+                displayFeaturedRepos(token); // Display featured repos
+            }
+        }
+
+        async function displayFeaturedRepos(token) {
+            const cachedRepos = localStorage.getItem('githubRepos');
+            if (cachedRepos) {
+                const repos = JSON.parse(cachedRepos);
+                const featuredList = document.getElementById('github-featured');
+                if (featuredList) {
+                    featuredList.innerHTML = ''; // Clear existing items to avoid duplicates
+                    const repoNames = new Set(); // Track repo names to avoid duplicates
+
+                    repos.slice(0, 3).forEach(repo => { // Limit to 3 repositories
+                        if (repo.name !== 'Gabriel-Proenca-Website' && !repoNames.has(repo.name)) { // Exclude "Gabriel-Proenca-Website"
+                            repoNames.add(repo.name);
+                            const item = document.createElement('div');
+                            item.classList.add('item');
+                            item.innerHTML = `
+                                <div class="details">
+                                    <a href="${repo.html_url}" target="_blank"><h3>${repo.name}</h3></a>
+                                    <div class="item-info">
+                                        <div class="year-badge">${new Date(repo.created_at).getFullYear()}</div>
+                                        <h4>${repo.language || 'N/A'}</h4>
+                                    </div>
+                                    <p>${repo.description || 'No description available.'}</p>
+                                </div>
+                            `;
+                            featuredList.appendChild(item);
+                        }
+                    });
+                }
             }
         }
 
