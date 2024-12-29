@@ -30,35 +30,50 @@ function openSharePopup() {
     });
 }
 
-async function fetchGitHubRepos() {
+async function fetchGitHubRepos(token) {
     try {
-        const response = await fetch('/api/github/repos');
+        const response = await fetch('/api/github/repos', {
+            headers: {
+                'Authorization': `token ${token}`
+            }
+        });
 
         if (response.status === 403) {
             throw new Error('Rate limit exceeded');
         }
 
         const repos = await response.json();
+        console.log('GitHub repos response:', repos); // Log the response for debugging
+        if (repos.error) {
+            throw new Error(repos.error);
+        }
+
         if (!Array.isArray(repos)) {
             throw new Error('Unexpected response format');
         }
 
         const worksList = document.getElementById('github-projects');
+        worksList.innerHTML = ''; // Clear existing items to avoid duplicates
+        const repoNames = new Set(); // Track repo names to avoid duplicates
+
         repos.forEach(repo => {
-            const item = document.createElement('div');
-            item.classList.add('item');
-            item.innerHTML = `
-                <div class="details">
-                    <a href="${repo.html_url}" target="_blank"><h3>${repo.name}</h3></a>
-                    <div class="item-info">
-                        <div class="year-badge">${new Date(repo.created_at).getFullYear()}</div>
-                        <h4>${repo.language || 'N/A'}</h4>
+            if (!repoNames.has(repo.name)) {
+                repoNames.add(repo.name);
+                const item = document.createElement('div');
+                item.classList.add('item');
+                item.innerHTML = `
+                    <div class="details">
+                        <a href="${repo.html_url}" target="_blank"><h3>${repo.name}</h3></a>
+                        <div class="item-info">
+                            <div class="year-badge">${new Date(repo.created_at).getFullYear()}</div>
+                            <h4>${repo.language || 'N/A'}</h4>
+                        </div>
+                        <p>${repo.description || 'No description available.'}</p>
+                        <button class="how-it-works-btn" onclick="openReadmePage('${repo.name}', '${token}')">How it works</button>
                     </div>
-                    <p>${repo.description || 'No description available.'}</p>
-                    <button class="how-it-works-btn" onclick="openReadmePage('${repo.name}')">How it works</button>
-                </div>
-            `;
-            worksList.appendChild(item);
+                `;
+                worksList.appendChild(item);
+            }
         });
     } catch (error) {
         console.error('Error fetching GitHub repos:', error.message);
@@ -67,9 +82,8 @@ async function fetchGitHubRepos() {
     }
 }
 
-async function openReadmePage(repoName) {
+async function openReadmePage(repoName, token) {
     const username = 'Gabzers'; // GitHub username
-    const token = process.env.GITHUB_TOKEN; // GitHub token
     try {
         const readmeResponse = await fetch(`https://api.github.com/repos/${username}/${repoName}/readme`, {
             headers: {

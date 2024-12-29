@@ -55,6 +55,24 @@
     <script src="js/script.js"></script>
     <script>
         document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        async function fetchGitHubToken() {
+            try {
+                const response = await fetch('/api/github/token');
+                const data = await response.json();
+                return data.token;
+            } catch (error) {
+                console.error('Error fetching GitHub token:', error.message);
+                return null;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            const token = await fetchGitHubToken();
+            if (token) {
+                fetchGitHubRepos(token);
+            }
+        });
     </script>
 </body>
 </html>

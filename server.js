@@ -1,5 +1,5 @@
 const express = require('express');
-const fetch = require('node-fetch');
+const fetch = require('node-fetch').default; // Ensure node-fetch is correctly imported
 require('dotenv').config();
 
 const app = express();
@@ -23,10 +23,22 @@ app.get('/api/github/repos', async (req, res) => {
         }
 
         const repos = await response.json();
+        if (!Array.isArray(repos)) {
+            console.error('Unexpected response format:', repos);
+            return res.status(500).json({ error: 'Unexpected response format' });
+        }
+
         res.json(repos);
     } catch (error) {
+        console.error('Error fetching GitHub repos:', error.message);
+        console.error('Error details:', error);
         res.status(500).json({ error: 'Error fetching GitHub repos' });
     }
+});
+
+app.get('/api/github/token', (req, res) => {
+    const token = process.env.GITHUB_TOKEN;
+    res.json({ token });
 });
 
 app.listen(port, () => {
