@@ -52,33 +52,39 @@ async function fetchGitHubRepos(token) {
             throw new Error('Unexpected response format');
         }
 
-        const worksList = document.getElementById('github-projects');
-        worksList.innerHTML = ''; // Clear existing items to avoid duplicates
-        const repoNames = new Set(); // Track repo names to avoid duplicates
+        localStorage.setItem('githubRepos', JSON.stringify(repos)); // Store repos in local storage
 
-        repos.forEach(repo => {
-            if (repo.name !== 'Gabriel-Proenca-Website' && !repoNames.has(repo.name)) { // Exclude "Gabriel-Proenca-Website"
-                repoNames.add(repo.name);
-                const item = document.createElement('div');
-                item.classList.add('item');
-                item.innerHTML = `
-                    <div class="details">
-                        <a href="${repo.html_url}" target="_blank"><h3>${repo.name}</h3></a>
-                        <div class="item-info">
-                            <div class="year-badge">${new Date(repo.created_at).getFullYear()}</div>
-                            <h4>${repo.language || 'N/A'}</h4>
+        const worksList = document.getElementById('github-projects');
+        if (worksList) {
+            worksList.innerHTML = ''; // Clear existing items to avoid duplicates
+            const repoNames = new Set(); // Track repo names to avoid duplicates
+
+            repos.forEach(repo => {
+                if (repo.name !== 'Gabriel-Proenca-Website' && !repoNames.has(repo.name)) { // Exclude "Gabriel-Proenca-Website"
+                    repoNames.add(repo.name);
+                    const item = document.createElement('div');
+                    item.classList.add('item');
+                    item.innerHTML = `
+                        <div class="details">
+                            <a href="${repo.html_url}" target="_blank"><h3>${repo.name}</h3></a>
+                            <div class="item-info">
+                                <div class="year-badge">${new Date(repo.created_at).getFullYear()}</div>
+                                <h4>${repo.language || 'N/A'}</h4>
+                            </div>
+                            <p>${repo.description || 'No description available.'}</p>
+                            <button class="how-it-works-btn" onclick="openReadmePage('${repo.name}', '${token}')">How it works</button>
                         </div>
-                        <p>${repo.description || 'No description available.'}</p>
-                        <button class="how-it-works-btn" onclick="openReadmePage('${repo.name}', '${token}')">How it works</button>
-                    </div>
-                `;
-                worksList.appendChild(item);
-            }
-        });
+                    `;
+                    worksList.appendChild(item);
+                }
+            });
+        }
     } catch (error) {
         console.error('Error fetching GitHub repos:', error.message);
         const worksList = document.getElementById('github-projects');
-        worksList.innerHTML = '<p>Unable to fetch GitHub repositories at this time. Please try again later.</p>';
+        if (worksList) {
+            worksList.innerHTML = '<p>Unable to fetch GitHub repositories at this time. Please try again later.</p>';
+        }
     }
 }
 
@@ -100,7 +106,47 @@ async function openReadmePage(repoName, token) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    fetchGitHubRepos();
+async function fetchGitHubToken() {
+    try {
+        const response = await fetch('/api/github/token');
+        const data = await response.json();
+        return data.token;
+    } catch (error) {
+        console.error('Error fetching GitHub token:', error.message);
+        return null;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async function() {
+    const token = await fetchGitHubToken();
+    const cachedRepos = localStorage.getItem('githubRepos');
+    if (cachedRepos && token) {
+        const repos = JSON.parse(cachedRepos);
+        const worksList = document.getElementById('github-projects');
+        if (worksList) {
+            worksList.innerHTML = ''; // Clear existing items to avoid duplicates
+            const repoNames = new Set(); // Track repo names to avoid duplicates
+
+            repos.forEach(repo => {
+                if (repo.name !== 'Gabriel-Proenca-Website' && !repoNames.has(repo.name)) { // Exclude "Gabriel-Proenca-Website"
+                    repoNames.add(repo.name);
+                    const item = document.createElement('div');
+                    item.classList.add('item');
+                    item.innerHTML = `
+                        <div class="details">
+                            <a href="${repo.html_url}" target="_blank"><h3>${repo.name}</h3></a>
+                            <div class="item-info">
+                                <div class="year-badge">${new Date(repo.created_at).getFullYear()}</div>
+                                <h4>${repo.language || 'N/A'}</h4>
+                            </div>
+                            <p>${repo.description || 'No description available.'}</p>
+                            <button class="how-it-works-btn" onclick="openReadmePage('${repo.name}', '${token}')">How it works</button>
+                        </div>
+                    `;
+                    worksList.appendChild(item);
+                }
+            });
+        }
+    }
     openSharePopup(); // Calls the function to open the share popup
 });

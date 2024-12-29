@@ -1,15 +1,22 @@
 const express = require('express');
 const fetch = require('node-fetch').default; // Ensure node-fetch is correctly imported
 require('dotenv').config();
+const NodeCache = require('node-cache'); // Import node-cache
 
 const app = express();
 const port = 3000;
+const cache = new NodeCache({ stdTTL: 300 }); // Cache for 5 minutes
 
 app.use(express.static('public'));
 
 app.get('/api/github/repos', async (req, res) => {
     const username = 'Gabzers';
     const token = process.env.GITHUB_TOKEN;
+
+    const cachedRepos = cache.get('githubRepos');
+    if (cachedRepos) {
+        return res.json(cachedRepos);
+    }
 
     try {
         const response = await fetch(`https://api.github.com/users/${username}/repos`, {
@@ -28,6 +35,7 @@ app.get('/api/github/repos', async (req, res) => {
             return res.status(500).json({ error: 'Unexpected response format' });
         }
 
+        cache.set('githubRepos', repos); // Cache the response
         res.json(repos);
     } catch (error) {
         console.error('Error fetching GitHub repos:', error.message);
